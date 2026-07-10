@@ -20,16 +20,18 @@ bool NRF52_Servo::init(const uint8_t pin) {
 	return false;
 }
 
-void NRF52_Servo::write(uint16_t value) {
+
+void NRF52Servo::write(uint16_t value) {
 	uint16_t constrained_value = constrain(value, 0, 180);
 	constrained_value = map(value, 0, 180, minPulseUs, maxPulseUs);
     writeMicroseconds(constrained_value);
-	current_value = constrained_value;
 }
 
-void NRF52_Servo::writeMicroseconds(uint16_t value) {
+void NRF52Servo::writeMicroseconds(uint16_t value) {
 	uint16_t constrained_value = constrain(value, minPulseUs, maxPulseUs);
-    hardware_pwm->writePin(pin, constrained_value / DUTY_CYCLE_RESOLUTION);
+    uint32_t dutyCycle = (constrained_value * MAXVALUE) / 20000; // 20000 = 20ms
+    hardware_pwm->writePin(pin, dutyCycle);
+    current_value = constrained_value;
 }
 
-# endif // NRF52_Servo_H
+# endif // NRF52_Servo_CPP
